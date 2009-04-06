@@ -149,7 +149,7 @@
 		
 		echo "<h3>How does it work?</h3>";
 		echo "<p>To generate a shapefile using ws-clustr simply send a binary (HTTP) POST containing the points you want to clustrize. ws-clustr will send back a compressed shapefile! For example:</p>";
-		echo "<pre>$> curl --data-binary '@/path/tp/points.txt' http://example.com/ws-clustr/ > ~/path/to/clustr.tar.gz</pre>";
+		echo "<pre>$> curl --data-binary '@/path/to/points.txt' http://example.com/ws-clustr/ > ~/path/to/clustr.tar.gz</pre>";
 
 		echo "<h3>Details</h3>";
 		
