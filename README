@@ -1,0 +1,29 @@
+ws-clustr
+
+ws-clustr is a bare-bones web interface, written in PHP, to the command-line
+Clustr application.
+How does it work?
+
+To generate a shapefile using ws-clustr simply send a binary (HTTP) POST
+containing the points you want to clustrize. ws-clustr will send back a
+compressed shapefile! For example:
+
+$> curl --data-binary '@/path/tp/points.txt' http://example.com/ws-clustr/ >
+~/path/to/clustr.tar.gz
+
+Details
+
+The file you pass should be formatted as <tag> <lon> <lat> , where tag is any
+unique string.
+
+You may also pass the following HTTP headers with your request:
+
+    * x-clustr-alpha.Specify the size of the alpha number to run Clustr
+      with. The default value is 0.01
+    * x-clustr-name. Specify the name of the output file to create. Valid names
+      may only contain the characters a-z (case-insensitive), 0-9 and
+      dashes. The default value is clustr-the current process ID
+
+That's it.
+
+There are no ponies. No.
