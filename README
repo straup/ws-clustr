@@ -27,3 +27,70 @@ You may also pass the following HTTP headers with your request:
 That's it.
 
 There are no ponies. No.
+
+--
+
+# If you don't have a local copy of Clustr and want to run this on
+# mapfromscratch.com AMI which is bundled with Clustr, do this:
+
+# First set up the Maps From Scratch AMI and log in
+
+your-computer> ec2-run-instances ami-4d769124 -k RSA_KEY_NAME
+
+your-computer> ec2-describe-instances
+RESERVATION     r-xxxxxxxx      0xxxxxxxx    default
+INSTANCE        i-xxxxxxxx      ami-4d769124 ec2-xxxx.amazonaws.com        ip-xxxx.ec2.internal
+
+your-computer> ssh -i RSA_KEY root@ec2-xxxx.amazonaws.com
+
+# Install Git, PHP5 and suck down a copy of ws-clustr
+
+ec2-machine> apt-get install php5
+ec2-machine> /etc/init.d/apache restart
+ec2-machine> apt-get install git-core
+ec2-machine> git clone git://github.com/straup/ws-clustr.git  
+
+# Move it in Apache root directory:
+
+ec2-machine> ln -s /root/ws-clustr /var/www
+
+# Uh... that's it. Go to: 
+
+http://ec2-xxxx.amazonaws.com/ws-clustr/
+
+# If you want to create your ws-clustr AMI, this worked for me:
+
+# First log out and copy your AWS key and certificate
+
+ec2-machine> exit
+your-computer> scp -i RSA_KEY EC2_KEY EC2_CERT http://ec2-xxxx.amazonaws.com/mnt/
+
+# Now log back in and create the bundle explicitly excluding the directory with
+# your AWS key and certificate
+
+your-computer> ssh -i RSA_KEY root@ec2-xxxx.amazonaws.com
+ec2-machine> ec2-bundle-vol -d /mnt -k EC2_KEY2 -c EC2_CERT -u AWS_USERID
+
+(wait)
+
+ec2-machine> ec2-upload-bundle -m /mnt/image.manifest.xml -b BUCKETNAME -a AWS_KEY -s AWS_SECRET
+
+# For some reason this doesn't seem to be included on ec2 machines proper...
+
+ec2-machine> exit
+your-computer> ec2-register BUCKETNAME/image.manifest.xml
+
+your-computer> ec2-register BUCKETNAME/image.manifest.xml
+IMAGE   ami-9999999
+
+# Profit!
+
+your-computer> ec2-run-instances ami-9999999 -k EC2_KEY_SHORTNAME
+
+--
+
+# Links
+
+# http://code.flickr.com/blog/2008/10/30/the-shape-of-alpha/
+# http://code.flickr.com/svn/trunk/clustr/
+# http://www.onlamp.com/pub/a/onlamp/2008/05/13/creating-applications-with-amazon-ec2-and-s3.html
