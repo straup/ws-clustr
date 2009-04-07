@@ -46,7 +46,7 @@ your-computer> ssh -i RSA_KEY root@ec2-xxxx.amazonaws.com
 # Install Git, PHP5 and suck down a copy of ws-clustr
 
 ec2-machine> apt-get install php5
-ec2-machine> /etc/init.d/apache restart
+ec2-machine> /etc/init.d/apache2 restart
 ec2-machine> apt-get install git-core
 ec2-machine> git clone git://github.com/straup/ws-clustr.git  
 
