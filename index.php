@@ -2,7 +2,7 @@
 
 	###########################################################
 
-	define('BIN_CLUSTR', '/usr/local/bin/clustr');
+	define('BIN_CLUSTR', '/usr/bin/clustr');
 	define('BIN_TAR', '/bin/tar');
 	define('PATH_TMP', '/tmp');
 
