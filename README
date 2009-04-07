@@ -69,7 +69,7 @@ your-computer> scp -i RSA_KEY EC2_KEY EC2_CERT http://ec2-xxxx.amazonaws.com/mnt
 # your AWS key and certificate
 
 your-computer> ssh -i RSA_KEY root@ec2-xxxx.amazonaws.com
-ec2-machine> ec2-bundle-vol -d /mnt -k EC2_KEY2 -c EC2_CERT -u AWS_USERID
+ec2-machine> ec2-bundle-vol -d /mnt -k EC2_KEY -c EC2_CERT -u AWS_USERID
 
 (wait)
 
