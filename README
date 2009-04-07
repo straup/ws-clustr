@@ -79,8 +79,6 @@ ec2-machine> ec2-upload-bundle -m /mnt/image.manifest.xml -b BUCKETNAME -a AWS_K
 
 ec2-machine> exit
 your-computer> ec2-register BUCKETNAME/image.manifest.xml
-
-your-computer> ec2-register BUCKETNAME/image.manifest.xml
 IMAGE   ami-9999999
 
 # Profit!
