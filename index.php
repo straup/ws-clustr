@@ -26,7 +26,20 @@
 	$alpha = 0.01;
 	$cname = "clustr-" . getmypid();
 
+	#
+	# Some days I hate the Internet...
+	#
+
 	$headers = getallheaders();
+
+	foreach ($headers as $key => $val){
+		if (preg_match("/^x-clustr/i", $key)){
+			$headers[strtolower($key)] = $val;
+			unset($headers[$key]);
+		}
+	}
+
+	# 
 
 	if (isset($headers['x-clustr-alpha'])){
 		$alpha = floatval($headers['x-clustr-alpha']);
@@ -75,10 +88,14 @@
 	# Happy happy
 	#
 
+	$fname = basename($gz);
+
         header("Content-Type: application/gzip");
-        header("Content-Disposition: attachment; filename=" . basename($gz).";" );
+        header("Content-Disposition: attachment; filename={$fname};" );
         header("Content-Transfer-Encoding: binary");
         header("Content-Length: " . filesize($gz));
+	header("X-clustr-filename: {$fname}");
+
         readfile($gz);
 
 	unlink($gz);
