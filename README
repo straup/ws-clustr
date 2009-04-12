@@ -9,6 +9,7 @@ ws-clustr
 
 ws-clustr is a bare-bones web interface, written in PHP, to the command-line
 Clustr application.
+
 How does it work?
 
 To generate a shapefile using ws-clustr simply send a binary (HTTP) POST
@@ -27,9 +28,19 @@ You may also pass the following HTTP headers with your request:
 
     * x-clustr-alpha.Specify the size of the alpha number to run Clustr
       with. The default value is 0.01
+
     * x-clustr-name. Specify the name of the output file to create. Valid names
       may only contain the characters a-z (case-insensitive), 0-9 and
       dashes. The default value is clustr-the current process ID
+
+    * x-clustr-cache. Use this header to ask ws-clustr to look for, and use, a
+      previously cached version of the points file you want to clustr (rather
+      than sending the whole thing to the server again and again). The value
+      should be: "clustr-" + the value of md5sum(/path/to/points.txt). If the
+      cache file is not found on the server ws-clustr will return an HTTP 404
+      error. It is left to client applications to decide what to do in those
+      circumstances
+
 
 That's it.
 
@@ -96,6 +107,6 @@ your-computer> ec2-run-instances ami-9999999 -k EC2_KEY_SHORTNAME
 
 # Links
 
-# http://code.flickr.com/blog/2008/10/30/the-shape-of-alpha/
 # http://code.flickr.com/svn/trunk/clustr/
+# http://code.flickr.com/blog/2008/10/30/the-shape-of-alpha/
 # http://www.onlamp.com/pub/a/onlamp/2008/05/13/creating-applications-with-amazon-ec2-and-s3.html
