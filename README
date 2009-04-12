@@ -34,13 +34,13 @@ You may also pass the following HTTP headers with your request:
       dashes. The default value is clustr-the current process ID
 
     * x-clustr-cache. Use this header to ask ws-clustr to look for, and use, a
-      previously cached version of the points file you want to clustr (rather
-      than sending the whole thing to the server again and again). The value
-      should be: "clustr-" + the value of md5sum(/path/to/points.txt). If the
-      cache file is not found on the server ws-clustr will return an HTTP 404
-      error. It is left to client applications to decide what to do in those
-      circumstances
-
+      previously cached version of the points file you want to clustr (rather than
+      sending the whole thing to the server again and again). The value should be:
+      "clustr-" + the value of md5sum(/path/to/points.txt). If the cache file is not
+      found on the server ws-clustr will return an HTTP 404 error. It is left to
+      client applications to decide what to do in those circumstances. (It is also
+      left to people running a ws-clustr to periodically clean out their system's tmp
+      directory where the cache files are stored.)
 
 That's it.
 
