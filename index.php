@@ -55,7 +55,7 @@
 	#
 
 	$alpha = 0.01;
-	$cname = "clustr-" . getmypid();
+	$clustr_name = "clustr-" . getmypid();
 
 	if (isset($headers['x-clustr-alpha'])){
 		$alpha = floatval($headers['x-clustr-alpha']);
