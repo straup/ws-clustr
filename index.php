@@ -4,27 +4,9 @@
 
 	define('BIN_CLUSTR', '/usr/bin/clustr');
 	define('BIN_TAR', '/bin/tar');
-	define('PATH_TMP', '/tmp');
+	define('PATH_TMP', sys_get_temp_dir());
 
 	###########################################################
-
-	#
-	# Do I have points?
-	#
-
-	$data = file_get_contents("php://input"); 
-
-	if (! $data){
-		usage();
-		exit;
-	}
-
-	#
-	# Any process specific details?
-	#
-
-	$alpha = 0.01;
-	$cname = "clustr-" . getmypid();
 
 	#
 	# Some days I hate the Internet...
@@ -39,7 +21,41 @@
 		}
 	}
 
-	# 
+	#
+	# Do I have points?
+	#
+
+       	if ($cache = $headers['x-clustr-cache']){
+
+               	$cache = PATH_TMP . '/' . $cache;
+
+                if (! file_exists($cache)){
+                       	clustr_not_found();
+                }     
+                        
+		$path_points = $cache;
+	}
+
+        else {
+
+		$data = file_get_contents("php://input");
+
+                if (! $data){
+                	usage();
+                        exit;
+		}
+
+                # 
+
+		$path_points = write_points($data);          
+	}
+
+	#
+	# Any process specific details?
+	#
+
+	$alpha = 0.01;
+	$cname = "clustr-" . getmypid();
 
 	if (isset($headers['x-clustr-alpha'])){
 		$alpha = floatval($headers['x-clustr-alpha']);
@@ -47,28 +63,18 @@
 
 	if (isset($headers['x-clustr-name'])){
 
-		$cname = $headers['x-clustr-name'];
+		$clustr_name = $headers['x-clustr-name'];
 
-		if (! preg_match("/^[a-z0-9-]+$/i", $cname)){
+		if (! preg_match("/^[a-z0-9-]+$/i", $clustr_name)){
 			clustr_error("Not a valid clustr name");
 		}
-	}
-
-	# 
-	# Write the points to a tmp file
-	#
-
-	$tmp = write_points($data);
-
-	if (! $tmp){
-		clustr_error("Failed to write tmp file for points");
 	}
 
 	#
 	# Generate the shapefile
 	#
 
-	$shproot = clustrize($tmp, $alpha, $cname);
+	$shproot = clustrize($path_points, $alpha, $clustr_name);
 
 	if (! $shproot){
 		clustr_error("Failed to generate shapefile data");
@@ -104,11 +110,17 @@
 	###########################################################
 
 	function write_points (&$data){
-		$tmp = tempnam(PATH_TMP, "clustr");
+
+		$tmp = tempnam(PATH_TMP, "clustr-" . getmypid());
+
 		$fh = fopen($tmp, "w");
 		fwrite($fh, $data);
 		fclose($fh);
-		return $tmp;
+
+                $fname = PATH_TMP . '/clustr-' . md5_file($tmp);
+
+                rename($tmp, $fname);
+		return $fname;
 	}
 
 	###########################################################
@@ -124,8 +136,6 @@
 
 		$cmd = BIN_CLUSTR . " -v -a {$alpha} {$points} {$shp}";
 		$out = shell_exec(escapeshellcmd($cmd));
-
-		unlink($points);
 
 		if (! file_exists($shp)){
 			return false;
@@ -176,6 +186,7 @@
 		echo "<ul>";
 		echo "<li><strong>x-clustr-alpha</strong>.Specify the size of the alpha number to run Clustr with.  The default value is <code>0.01</code></li>";
 		echo "<li><strong>x-clustr-name</strong>. Specify the name of the output file to create. Valid names may only contain the characters a-z (case-insensitive), 0-9 and dashes. The default value is <code>clustr-<em>the current process ID</em></code></li>";		
+                echo "<li><strong>x-clustr-cache</strong>. Use this header to ask ws-clustr to look for, and use, a previously cached version of the points file you want to clustr (rather than sending the whole thing to the server again and again). The value should be: <q>clustr-</q> + the value of <em>md5sum(/path/to/points.txt)</em>. If the cache file is not found on the server ws-clustr will return an HTTP 404 error. It is left to client applications to decide what to do in those circumstances. (It is also left to people running a ws-clustr to periodically clean out their system's tmp directory where the cache files are stored.)</li>";
 		echo "</ul>";
 
 		echo "<h3>That's it.</h3>";
@@ -185,9 +196,20 @@
 	###########################################################
 
 	function clustr_error ($msg){
-
 		header("HTTP/1.1 500 Server Error");
 		echo $msg;
+		exit;
+	}
+
+	###########################################################
+
+	function clustr_not_found ($msg=''){
+		header("HTTP/1.1 404 File Not Found");
+
+		if ($msg){
+			echo $msg;
+		}
+
 		exit;
 	}
 
