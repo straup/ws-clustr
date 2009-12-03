@@ -96,11 +96,15 @@
 
 	$fname = basename($gz);
 
+	$enc_fname = htmlspecialchars($fname);
+	$enc_alpha = htmlspecialchars($alpha);
+	
         header("Content-Type: application/gzip");
-        header("Content-Disposition: attachment; filename={$fname};" );
+        header("Content-Disposition: attachment; filename={$enc_fname};" );
         header("Content-Transfer-Encoding: binary");
         header("Content-Length: " . filesize($gz));
-	header("X-clustr-filename: {$fname}");
+	header("X-clustr-filename: {$enc_fname}");
+	header("X-clustr-alpha: {$enc_alpha}");
 
         readfile($gz);
 
